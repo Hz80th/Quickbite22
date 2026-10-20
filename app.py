@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template
 
 import db
+import pickup
 from cart import bp as cart_bp
 
 def create_app(test_config=None):
@@ -14,6 +15,8 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     db.init_app(app)
+
+    pickup.init_app(app)
     app.register_blueprint(cart_bp)
 
     @app.route("/")

@@ -1,0 +1,14 @@
+<label for="pickup_time">Pickup time</label>
+<select id="pickup_time" name="pickup_time" required>
+  <option value="" disabled selected>Choose a pickup time</option>
+  {% for slot in get_pickup_slots() %}
+  <option value="{{ slot }}">{{ slot[11:] }}</option>
+  {% endfor %}
+</select>
+<script>
+  // Enable "Place Order" only after a slot is chosen
+  document.getElementById("pickup_time").addEventListener("change", function () {
+    var button = document.getElementById("place-order");
+    if (button) { button.disabled = this.value === ""; }
+  });
+</script>
