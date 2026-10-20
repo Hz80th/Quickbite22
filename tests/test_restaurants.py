@@ -19,3 +19,18 @@ def test_empty_restaurants_shows_message(client, app):
         database.commit()
     r = client.get("/")
     assert b"No restaurants available." in r.data
+
+def test_menu_shows_only_that_restaurants_items(client):
+    # Restaurant 1's menu has its items, not restaurant 2's
+    r = client.get("/restaurants/1")
+    assert r.status_code == 200
+    assert b"Maple Bistro" in r.data
+    assert b"Poutine" in r.data
+    assert b"$11.99" in r.data
+    assert b"Pho Tai" not in r.data
+ 
+ 
+def test_menu_has_back_link(client):
+    # The menu page links back to the restaurant list
+    r = client.get("/restaurants/1")
+    assert b"Back to restaurants" in r.data
