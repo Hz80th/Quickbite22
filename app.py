@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 
 import db
 import pickup
@@ -30,6 +30,21 @@ def create_app(test_config=None):
             "SELECT * FROM restaurant ORDER BY name"
         ).fetchall()
         return render_template("index.html", restaurants=restaurants)
+
+    @app.route("/restaurants/<int:restaurant_id>")
+    def restaurant_menu(restaurant_id):
+        # Load one restaurant and only its items (PBI-04)
+        database = db.get_db()
+        restaurant = database.execute(
+            "SELECT * FROM restaurant WHERE id = ?", (restaurant_id,)
+        ).fetchone()
+        if restaurant is None:
+            abort(404)
+        items = database.execute(
+            "SELECT * FROM menu_item WHERE restaurant_id = ? ORDER BY name",
+            (restaurant_id,),
+        ).fetchall()
+        return render_template("restaurant_menu.html", restaurant=restaurant, items=items)
 
 
     return app
