@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Staff Orders — QuickBite</title>
+<style>body{font:16px Arial,sans-serif;max-width:780px;margin:35px auto;padding:0 18px}h1{color:#8e2035}.order{border:1px solid #ccc;padding:16px;margin:12px 0;border-radius:7px}select,button{font:inherit;padding:7px}</style></head>
+<body><h1>Incoming Orders</h1>
+<form method="get"><label for="restaurant_id">Restaurant: </label><select name="restaurant_id" id="restaurant_id"><option value="">Select restaurant</option>
+{% for restaurant in restaurants %}<option value="{{ restaurant.id }}" {% if restaurant_id == restaurant.id %}selected{% endif %}>{{ restaurant.name }}</option>{% endfor %}
+</select><button type="submit">View orders</button></form>
+{% if restaurant_id is not none %}
+{% if orders %}{% for entry in orders %}<section class="order"><h2>Order #{{ entry.order.id }}</h2><p>Customer: {{ entry.order.customer_name }}</p><p>Pickup: {{ entry.order.pickup_time.replace('T',' ') }}</p><p>Status: {{ entry.order.status }}</p><ul>
+{% for item in entry["items"] %}<li>{{ item.name }} × {{ item.quantity }}</li>{% endfor %}</ul></section>{% endfor %}
+{% else %}<p>No active orders for this restaurant.</p>{% endif %}
+{% endif %}<a href="/">Home</a></body></html>
