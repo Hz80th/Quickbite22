@@ -1,4 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
   <p>Welcome to QuickBite.</p>
+  <h2>Restaurants</h2>
+ 
+  {% if restaurants %}
+    <ul>
+      {% for restaurant in restaurants %}
+        <li>
+          <a href="/restaurants/{{ restaurant['id'] }}">
+            {{ restaurant['name'] }} - {{ restaurant['address'] }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No restaurants available.</p>
+  {% endif %}
+
 {% endblock %}
