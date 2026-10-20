@@ -5,9 +5,48 @@
   <title>QuickBite</title>
 </head>
 <body>
-  <header><h1><a href="/">QuickBite</a></h1></header>
+  <header>
+    <h1><a href="/">QuickBite</a></h1>
+    <span id="cart-indicator">Cart: 0 items - $0.00</span>
+  </header>
   <main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <p>{{ messages[0] }}</p>
+      {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
   </main>
+  <script>
+    // Add an item to the cart, then refresh the indicator
+    function addToCart(itemId) {
+      fetch("/cart/add/" + itemId, {method: "POST"})
+        .then(r => r.json())
+        .then(data => {
+          if (data.ok) {
+            refreshCart();
+          } else if (data.error === "different_restaurant") {
+            alert("Your cart has items from another restaurant. Please clear the cart first.");
+          }
+        });
+    }
+ 
+    // Clear the cart
+    function clearCart() {
+      fetch("/cart/clear", {method: "POST"})
+        .then(r => r.json())
+        .then(data => { if (data.ok) refreshCart(); });
+    }
+ 
+    // Refresh the indicator without reloading the page
+    function refreshCart() {
+      fetch("/cart/summary")
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById("cart-indicator").textContent =
+            "Cart: " + data.count + " items - $" + (data.total_cents / 100).toFixed(2);
+        });
+    }
+  </script>
 </body>
 </html>
