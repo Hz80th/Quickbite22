@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Restaurants</h2>
+<button onclick="clearCart()">Clear Cart</button>
+{% for r in restaurants %}
+  <h3>{{ r.name }} ({{ r.address }})</h3>
+  <ul>
+  {% for item in items if item["restaurant_id"] == r["id"] %}
+    <li>
+      {{ item.name }} - ${{ "%.2f"|format(item.price_cents / 100) }}
+      <button onclick="addToCart({{ item.id }})">Add</button>
+    </li>
+  {% endfor %}
+  </ul>
+{% endfor %}
+{% endblock %}
