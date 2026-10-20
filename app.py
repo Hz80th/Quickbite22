@@ -19,6 +19,11 @@ def create_app(test_config=None):
     pickup.init_app(app)
     app.register_blueprint(cart_bp)
 
+    from checkout import bp as checkout_bp
+    from staff import bp as staff_bp
+    app.register_blueprint(checkout_bp)
+    app.register_blueprint(staff_bp)
+
     @app.route("/")
     def index():
         return render_template("index.html")
