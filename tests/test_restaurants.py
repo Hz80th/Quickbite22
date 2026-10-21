@@ -15,6 +15,7 @@ def test_empty_restaurants_shows_message(client, app):
     with app.app_context():
         database = get_db()
         database.execute("DELETE FROM menu_item")
+        database.execute("DELETE FROM demo_user")
         database.execute("DELETE FROM restaurant")
         database.commit()
     r = client.get("/")
