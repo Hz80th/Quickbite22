@@ -4,6 +4,8 @@ from flask import Flask, redirect, render_template, request, url_for, abort
 
 import db
 import pickup
+import demo_db
+from demo_auth import bp as demo_auth_bp, current_user
 from cart import bp as cart_bp
 
 def create_app(test_config=None):
@@ -15,6 +17,8 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     db.init_app(app)
+    demo_db.init_app(app)
+    app.register_blueprint(demo_auth_bp)
 
     pickup.init_app(app)
     app.register_blueprint(cart_bp)
@@ -23,7 +27,7 @@ def create_app(test_config=None):
     def inject_cart():
         from cart import cart_summary
         count, total = cart_summary()
-        return {"cart_count": count, "cart_total_cents": total}
+        return {"cart_count": count, "cart_total_cents": total, "current_user": current_user()}
 
 
     from checkout import bp as checkout_bp

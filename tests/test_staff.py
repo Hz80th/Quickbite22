@@ -1,7 +1,12 @@
 from db import get_db
 
+def login_staff(client):
+    client.post("/login", data={"user_id": "201"})
+
+
 
 def test_staff_hides_finished_and_sorts(app, client):
+    login_staff(client)
     with app.app_context():
         db = get_db()
         for name, pickup, status in [
@@ -26,7 +31,8 @@ def test_staff_hides_finished_and_sorts(app, client):
 
 
 def test_staff_empty_orders(client):
-    response = client.get('/staff/orders?restaurant_id=999999')
+    login_staff(client)
+    response = client.get('/staff/orders')
     assert b'No active orders' in response.data
 
 
@@ -50,6 +56,7 @@ def _status(app, order_id):
 
 
 def test_advance_order_one_step_and_persists(app, client):
+    login_staff(client)
     order_id = _create_order(app)
     response = client.post(
         f'/staff/orders/{order_id}/advance',
@@ -63,6 +70,7 @@ def test_advance_order_one_step_and_persists(app, client):
 
 
 def test_reject_skip_and_backward(app, client):
+    login_staff(client)
     order_id = _create_order(app, 'Received')
     response = client.post(
         f'/staff/orders/{order_id}/advance', data={'next_status': 'Completed'}
@@ -79,6 +87,7 @@ def test_reject_skip_and_backward(app, client):
 
 
 def test_completed_order_disappears_from_active_list(app, client):
+    login_staff(client)
     order_id = _create_order(app, 'Ready for Pickup')
     response = client.post(
         f'/staff/orders/{order_id}/advance', data={'next_status': 'Completed'}
@@ -93,6 +102,7 @@ def test_completed_order_disappears_from_active_list(app, client):
 
 
 def test_missing_and_malformed_update(app, client):
+    login_staff(client)
     order_id = _create_order(app)
     assert client.post(f'/staff/orders/{order_id}/advance').status_code == 400
     assert _status(app, order_id) == 'Received'

@@ -1,16 +1,16 @@
-<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout — QuickBite</title>
-<style>body{font:16px Arial,sans-serif;max-width:720px;margin:35px auto;padding:0 18px;color:#222}h1{color:#8e2035}label{display:block;margin:15px 0 5px}input,select,button{font:inherit;padding:9px}input,select{width:100%;box-sizing:border-box}button{margin-top:18px;background:#8e2035;color:white;border:0;border-radius:4px}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:10px;border-bottom:1px solid #ddd}.error{color:#a40000}</style></head>
-<body><h1>QuickBite Checkout</h1>
+{% extends "base.html" %}
+{% block content %}
+<h1>QuickBite Checkout</h1>
 {% for error in errors %}<p class="error" role="alert">{{ error }}</p>{% endfor %}
 {% if items %}
 <table><thead><tr><th>Item</th><th>Quantity</th><th>Subtotal</th></tr></thead><tbody>
 {% for item in items %}<tr><td>{{ item.name }}</td><td>{{ item.quantity }}</td><td>${{ '%.2f' | format(item.subtotal_cents / 100) }}</td></tr>{% endfor %}
 </tbody></table><h2>Total: ${{ '%.2f' | format(total_cents / 100) }}</h2>
 <form method="post">
-<label for="customer_name">Customer name</label><input id="customer_name" name="customer_name" value="{{ customer_name }}" required maxlength="150">
+<label for="customer_name">Customer name</label><input id="customer_name" name="customer_name" value="{{ customer_name }}" readonly required maxlength="150">
 {% include "_pickup_select.html" %}
 <button type="submit" id="place-order" disabled>Place Order</button>
 </form>
-{% else %}<p>Your cart is empty. Please add an item before checking out.</p><a href="/menu">Browse menu</a>{% endif %}
-</body></html>
+{% else %}<p>Your cart is empty. Please add an item before checking out.</p><a href="/">Browse restaurants on Home</a>{% endif %}
+
+{% endblock %}

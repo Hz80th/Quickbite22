@@ -8,7 +8,15 @@
   <header>
     <h1><a href="/">QuickBite</a></h1>
     <span id="cart-indicator">Cart: {{ cart_count }} items - ${{ "%.2f"|format(cart_total_cents / 100) }}</span>
-    <a href="/checkout"><button>Checkout</button></a>
+    <nav aria-label="Main navigation">
+      <a href="/">Home</a> · <a href="/track">Track Order</a>
+      {% if current_user and current_user['role'] == 'customer' %} · <a href="/checkout">Checkout</a>{% endif %}
+      {% if current_user and current_user['role'] == 'staff' %} · <a href="/staff/orders">Staff Orders</a>{% endif %}
+      {% if current_user %}
+      <span> | Selected: {{ current_user['name'] }} ({{ current_user['role'] }}, ID {{ current_user['id'] }})</span>
+      <form action="{{ url_for('demo_auth.logout') }}" method="post" style="display:inline"><button type="submit">Switch user</button></form>
+      {% else %} · <a href="{{ url_for('demo_auth.login') }}">Choose demo user</a>{% endif %}
+    </nav>
   </header>
   <main>
     {% with messages = get_flashed_messages() %}

@@ -3,15 +3,19 @@ from pickup import get_pickup_slots
 
 
 def add_test_cart(client):
+    client.post('/login', data={'user_id': '101'})
     with client.session_transaction() as session:
         session['cart'] = {'restaurant_id': 1, 'items': {'1': 2}}
 
 
-def test_checkout_requires_name(client):
+def test_checkout_uses_logged_in_customer_name(app, client):
     add_test_cart(client)
     slot = get_pickup_slots()[0]
-    response = client.post('/checkout', data={'customer_name': ' ', 'pickup_time': slot})
-    assert b'Customer name is required' in response.data
+    response = client.post('/checkout', data={'customer_name': 'Forged Name', 'pickup_time': slot})
+    assert response.status_code == 302
+    with app.app_context():
+        order = get_db().execute('SELECT customer_name FROM orders ORDER BY id DESC LIMIT 1').fetchone()
+        assert order['customer_name'] == 'Alex Chen'
 
 
 def test_checkout_rejects_invalid_pickup(client):
@@ -21,6 +25,7 @@ def test_checkout_rejects_invalid_pickup(client):
 
 
 def test_checkout_rejects_empty_cart(client):
+    client.post('/login', data={'user_id': '101'})
     response = client.post('/checkout', data={'customer_name': 'Alex', 'pickup_time': get_pickup_slots()[0]})
     assert b'Your cart is empty' in response.data
 
@@ -33,7 +38,7 @@ def test_checkout_saves_order_and_clears_cart(app, client):
     assert b'Order Confirmed' in response.data
     with app.app_context():
         db = get_db()
-        order = db.execute('SELECT * FROM orders WHERE customer_name = ?', ('Alex',)).fetchone()
+        order = db.execute('SELECT * FROM orders WHERE customer_name = ?', ('Alex Chen',)).fetchone()
         assert order is not None
         assert order['status'] == 'Received'
         assert order['pickup_time'] == slot

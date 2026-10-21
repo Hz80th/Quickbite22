@@ -19,3 +19,9 @@ INSERT INTO menu_item (restaurant_id, name, price_cents) VALUES
   (3, 'Garlic Knots', 650),
   (3, 'Arancini', 895),
   (3, 'Tiramisu', 750);
+
+INSERT INTO demo_user (id, name, role, restaurant_id) VALUES
+(101,'Alex Chen','customer',NULL),(102,'Jamie Lee','customer',NULL),
+(103,'Taylor Kim','customer',NULL),(104,'Morgan Chen','customer',NULL),
+(105,'Jordan Smith','customer',NULL),(201,'Sam','staff',1),
+(202,'Linh','staff',2),(203,'Marco','staff',3);

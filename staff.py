@@ -1,15 +1,18 @@
 """PBI-08: Restaurant staff active order display."""
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from db import get_db
+from demo_auth import current_user, staff_required
 
 bp = Blueprint('staff', __name__)
 
 
 @bp.route('/staff/orders')
+@staff_required
 def orders():
     db = get_db()
-    restaurants = db.execute('SELECT id, name FROM restaurant ORDER BY name').fetchall()
-    chosen = request.args.get('restaurant_id', type=int)
+    user = current_user()
+    chosen = user['restaurant_id']
+    restaurants = db.execute('SELECT id, name FROM restaurant WHERE id = ?', (chosen,)).fetchall()
     orders_with_items = []
     if chosen is not None:
         active_orders = db.execute(
@@ -37,6 +40,7 @@ STATUS_FLOW = ('Received', 'Preparing', 'Ready for Pickup', 'Completed')
 
 
 @bp.route('/staff/orders/<int:order_id>/advance', methods=['POST'])
+@staff_required
 def advance_order(order_id):
     db = get_db()
     order = db.execute(
@@ -45,6 +49,8 @@ def advance_order(order_id):
     ).fetchone()
     if order is None:
         abort(404)
+    if order['restaurant_id'] != current_user()['restaurant_id']:
+        abort(403)
 
     current = order['status']
     if current not in STATUS_FLOW[:-1]:
