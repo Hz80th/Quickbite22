@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS demo_user;
 DROP TABLE IF EXISTS order_item;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS menu_item;
@@ -33,4 +34,11 @@ CREATE TABLE order_item (
   menu_item_id INTEGER NOT NULL REFERENCES menu_item(id),
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   unit_price_cents INTEGER NOT NULL
+);
+
+CREATE TABLE demo_user (
+  id INTEGER PRIMARY KEY, name TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('customer','staff')),
+  restaurant_id INTEGER REFERENCES restaurant(id),
+  CHECK ((role='customer' AND restaurant_id IS NULL) OR (role='staff' AND restaurant_id IS NOT NULL))
 );
