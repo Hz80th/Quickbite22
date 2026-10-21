@@ -51,9 +51,8 @@ def clear():
     return jsonify({"ok": True})
  
  
-@bp.route("/cart/summary")
-def summary():
-    # Return the count and total price for the top indicator
+def cart_summary():
+    # Count and total price for the top indicator
     cart = get_cart()
     db = get_db()
     count = 0
@@ -65,6 +64,13 @@ def summary():
         if row:
             count += qty
             total += row["price_cents"] * qty
+    return count, total
+
+
+@bp.route("/cart/summary")
+def summary():
+    # Return the count and total price for the top indicator
+    count, total = cart_summary()
     return jsonify({"count": count, "total_cents": total})
  
  

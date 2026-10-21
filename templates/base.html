@@ -7,7 +7,8 @@
 <body>
   <header>
     <h1><a href="/">QuickBite</a></h1>
-    <span id="cart-indicator">Cart: 0 items - $0.00</span>
+    <span id="cart-indicator">Cart: {{ cart_count }} items - ${{ "%.2f"|format(cart_total_cents / 100) }}</span>
+    <a href="/checkout"><button>Checkout</button></a>
   </header>
   <main>
     {% with messages = get_flashed_messages() %}

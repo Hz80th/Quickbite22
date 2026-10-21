@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Order Confirmation - QuickBite</title></head>
+<body style="font:16px Arial,sans-serif;max-width:720px;margin:35px auto;padding:0 18px"><h1>Order Confirmed</h1>
+<p>Order ID: <strong>#{{ order.id }}</strong></p><p>Customer: {{ order.customer_name }}</p><p>Pickup time: {{ order.pickup_time.replace('T', ' ') }}</p><p>Status: {{ order.status }}</p>
+<h2>Items</h2><ul>{% for item in items %}<li>{{ item.name }} x {{ item.quantity }} - ${{ '%.2f' | format(item.unit_price_cents * item.quantity / 100) }}</li>{% endfor %}</ul>
+<h2>Total: ${{ '%.2f' | format(order.total_cents / 100) }}</h2>
+<p><a href="/orders/{{ order.id }}/status">View order status</a></p><a href="/">Back to Home</a></body></html>
