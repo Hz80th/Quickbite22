@@ -2,6 +2,7 @@
 from flask import Blueprint, abort, redirect, render_template, request, session, url_for
 from db import get_db
 from pickup import is_valid_slot
+from demo_auth import customer_required, current_user
 
 bp = Blueprint('checkout', __name__)
 
@@ -36,14 +37,15 @@ def cart_details():
 
 
 @bp.route('/checkout', methods=['GET', 'POST'])
+@customer_required
 def checkout_page():
     items, total, restaurant_id = cart_details()
     errors = []
-    customer_name = ''
+    customer_name = current_user()['name']
     pickup_time = ''
 
     if request.method == 'POST':
-        customer_name = request.form.get('customer_name', '').strip()
+        customer_name = current_user()['name']  # never trust posted identity
         pickup_time = request.form.get('pickup_time', '')
         if not customer_name:
             errors.append('Customer name is required.')
