@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
   <p>Welcome to QuickBite.</p>
+  {% if not current_user %}
+    </strong> <a href="{{ url_for('demo_auth.login') }}">Choose demo user / Login</a></p>
+  {% else %}
+    <p>Signed in as {{ current_user['name'] }} ({{ current_user['role'] }}).</p>
+    {% if current_user['role'] == 'staff' %}<p><a href="{{ url_for('staff.orders') }}">Manage restaurant orders</a></p>{% endif %}
+  {% endif %}
+
   <h2>Restaurants</h2>
  
   {% if restaurants %}
